@@ -4,9 +4,9 @@
  */
 package domain;
 
-import exception.InvalidAmountException;
-import exception.InsufficientFundsException;
-import exception.DailyLimitExceededException;
+import exceptions.InvalidAmountException;
+import exceptions.InsufficientFundsException;
+import exceptions.DailyLimitExceededException;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -17,7 +17,7 @@ import java.time.Period;
 /**
  * NetSaverAccount
  */
-public class NetSaverAccount extends BaseAccount implements IInterestBearing, IHasDailyLimit {
+public class NetSaverAccount extends BaseAccount implements IHasTermInfo, IInterestBearing, IHasDailyLimit {
 
     private static final double INTEREST_RATE = 0.03; // 3% monthly
     private static final Period TERM_PERIOD = Period.ofMonths(1); // Fixed 1-month term
@@ -25,20 +25,20 @@ public class NetSaverAccount extends BaseAccount implements IInterestBearing, IH
     private double remainingWithdrawalLimit = 0;
     private final LocalDate termBeginDate;
 
-    public NetSaverAccount(double initialBalance, LocalDate termBeginDate) throws InvalidAmountException {
-        super(initialBalance);
+    public NetSaverAccount(String accountId, String accountTitle, double initialBalance, LocalDate termBeginDate) throws InvalidAmountException {
+        super(accountId, accountTitle, AccountType.NET_SAVER, initialBalance);
         this.termBeginDate = termBeginDate;
         remainingWithdrawalLimit = DEFAULT_WITHDRAWAL_LIMIT;
     }
 
-    public NetSaverAccount(double initialBalance, LocalDate termBeginDate, double remainingWithdrawalLimit) throws InvalidAmountException {
-        super(initialBalance);
+    public NetSaverAccount(String accountId, String accountTitle, double initialBalance, LocalDate termBeginDate, double remainingWithdrawalLimit) throws InvalidAmountException {
+        super(accountId, accountTitle, AccountType.NET_SAVER, initialBalance);
         this.termBeginDate = termBeginDate;
         this.remainingWithdrawalLimit = remainingWithdrawalLimit;
     }
 
     @Override
-    public double getDailyLimit() {
+    public double getRemainingWithdrawalLimit() {
         return remainingWithdrawalLimit;
     }
 
@@ -67,11 +67,23 @@ public class NetSaverAccount extends BaseAccount implements IInterestBearing, IH
         remainingWithdrawalLimit -= amount;
     }
 
+    @Override
     public LocalDate getTermBeginDate() {
         return termBeginDate;
     }
 
-    public static Period getTermPeriod() {
+    @Override
+    public Period getTermPeriod() {
         return TERM_PERIOD;
+    }
+
+    @Override
+    public double getWithdrawalLimit() {
+        return DEFAULT_WITHDRAWAL_LIMIT;
+    }
+
+    @Override
+    public double getInterestRate() {
+        return INTEREST_RATE;
     }
 }

@@ -2,26 +2,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package exception;
+package exceptions;
 
 /**
  *
  * @author pc
  */
 /**
- * Thrown when an invalid (negative or incompatible) amount is provided for a
- * transaction.
+ * Thrown when a withdrawal attempt exceeds the allowed daily withdrawal limit
+ * for the account.
  */
-public class InvalidAmountException extends CustomException {
+public class DailyLimitExceededException extends CustomException {
 
     private static final String DEFAULT_MESSAGE
-            = "Amount must be greater than zero and match ATM note denominations (e.g., 20, 50, 100)";
+            = "This withdrawal exceeds your daily limit. Try a smaller amount or wait until tomorrow.";
 
-    public InvalidAmountException() {
+    public DailyLimitExceededException() {
         super(DEFAULT_MESSAGE);
     }
 
-    public InvalidAmountException(String message) {
+    public DailyLimitExceededException(String message) {
         super(message);
     }
 

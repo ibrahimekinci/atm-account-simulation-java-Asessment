@@ -4,9 +4,9 @@
  */
 package domain;
 
-import exception.InvalidAmountException;
-import exception.InsufficientFundsException;
-import exception.CustomException;
+import exceptions.InvalidAmountException;
+import exceptions.InsufficientFundsException;
+import exceptions.CustomException;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -17,16 +17,17 @@ import java.time.Period;
 /**
  * Fixed account
  */
-public class FixedAccount extends BaseAccount implements IInterestBearing {
+public class FixedAccount extends BaseAccount implements IHasTermInfo, IInterestBearing {
 
-    private final LocalDate accountOpenDate;
+    private static final double INTEREST_RATE = 0.05; // 3% monthly
+    private final LocalDate termBeginDate;
     private final Period termPeriod;
     private final boolean earlyWithdrawalAttempted;
 
-    public FixedAccount(double initialBalance, LocalDate accountOpenDate, Period termPeriod, boolean earlyWithdrawalAttempted)
+    public FixedAccount(String accountId, String accountTitle, double initialBalance, LocalDate termBeginDate, Period termPeriod, boolean earlyWithdrawalAttempted)
             throws InvalidAmountException {
-        super(initialBalance);
-        this.accountOpenDate = accountOpenDate;
+        super(accountId, accountTitle, AccountType.FIXED, initialBalance);
+        this.termBeginDate = termBeginDate;
         this.termPeriod = termPeriod;
         this.earlyWithdrawalAttempted = earlyWithdrawalAttempted;
     }
@@ -43,7 +44,7 @@ public class FixedAccount extends BaseAccount implements IInterestBearing {
     @Override
     public void addInterest() {
         if (!isItEarlyWithdrawal()) {
-            balance += balance * 0.05;
+            balance += balance * INTEREST_RATE;
         }
     }
 
@@ -56,7 +57,23 @@ public class FixedAccount extends BaseAccount implements IInterestBearing {
         if (earlyWithdrawalAttempted) {
             return true;
         }
-        LocalDate maturityDate = accountOpenDate.plus(termPeriod);
+        LocalDate maturityDate = termBeginDate.plus(termPeriod);
         return LocalDate.now().isBefore(maturityDate);
     }
+
+    @Override
+    public double getInterestRate() {
+        return INTEREST_RATE;
+    }
+
+    @Override
+    public LocalDate getTermBeginDate() {
+        return termBeginDate;
+    }
+
+    @Override
+    public Period getTermPeriod() {
+        return termPeriod;
+    }
+
 }

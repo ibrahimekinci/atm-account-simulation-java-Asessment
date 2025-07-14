@@ -8,21 +8,28 @@ package domain;
  *
  * @author pc
  */
-import exception.InvalidAmountException;
-import exception.InsufficientFundsException;
+import exceptions.CustomException;
+import exceptions.InvalidAmountException;
+import exceptions.InsufficientFundsException;
 
 /**
  * Abstract class for shared account logic.
  */
 public abstract class BaseAccount implements IAccount {
 
+    protected final String accountId;
+    protected final String accountTitle;
+    protected final AccountType accountType;
     protected double balance;
 
-    public BaseAccount(double initialBalance) throws InvalidAmountException {
+    public BaseAccount(String accountId, String accountTitle, AccountType accountType, double initialBalance) throws InvalidAmountException {
         if (initialBalance <= 0) {
             throw new InvalidAmountException("Initial balance must be greater than zero.");
         }
         this.balance = initialBalance;
+        this.accountId = accountId;
+        this.accountTitle = accountTitle;
+        this.accountType = accountType;
     }
 
     @Override
@@ -51,5 +58,41 @@ public abstract class BaseAccount implements IAccount {
         if (amount > balance) {
             throw new InsufficientFundsException();
         }
+    }
+
+    @Override
+    public void withdraw(double amount) throws CustomException {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getAccountId() {
+        return accountId;
+    }
+
+    @Override
+    public String getAccountTitle() {
+        return accountTitle;
+    }
+
+    @Override
+    public AccountType getAccountType() {
+        return accountType;
+    }
+
+    @Override
+    public String getAccountTypeDisplayName() {
+        return switch (accountType) {
+            case SAVINGS ->
+                "Savings Account";
+            case CHEQUE ->
+                "Cheque Account";
+            case NET_SAVER ->
+                "Net Saver Account";
+            case FIXED ->
+                "Fixed Account";
+            default ->
+                "Unknown Account";
+        }; // Assuming accountType is a field of type AccountType
     }
 }

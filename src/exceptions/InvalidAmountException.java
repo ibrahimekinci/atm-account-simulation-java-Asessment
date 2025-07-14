@@ -2,23 +2,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package exception;
+package exceptions;
 
 /**
  *
- * @author pc /** Thrown when an attempted withdrawal exceeds the current
- * account balance.
+ * @author pc
  */
-public class InsufficientFundsException extends CustomException {
+/**
+ * Thrown when an invalid (negative or incompatible) amount is provided for a
+ * transaction.
+ */
+public class InvalidAmountException extends CustomException {
 
     private static final String DEFAULT_MESSAGE
-            = "Insufficient balance. Please check your available funds.";
+            = "Amount must be greater than zero and match ATM note denominations (e.g., 20, 50, 100)";
 
-    public InsufficientFundsException() {
+    public InvalidAmountException() {
         super(DEFAULT_MESSAGE);
     }
 
-    public InsufficientFundsException(String message) {
+    public InvalidAmountException(String message) {
         super(message);
     }
 

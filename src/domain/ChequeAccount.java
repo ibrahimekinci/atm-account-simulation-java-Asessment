@@ -4,8 +4,8 @@
  */
 package domain;
 
-import exception.InvalidAmountException;
-import exception.InsufficientFundsException;
+import exceptions.InvalidAmountException;
+import exceptions.InsufficientFundsException;
 
 /**
  *
@@ -16,8 +16,8 @@ import exception.InsufficientFundsException;
  */
 public class ChequeAccount extends BaseAccount {
 
-    public ChequeAccount(double initialBalance) throws InvalidAmountException {
-        super(initialBalance);
+    public ChequeAccount(String accountId, String accountTitle, double initialBalance) throws InvalidAmountException {
+        super(accountId, accountTitle, AccountType.CHEQUE, initialBalance);
     }
 
     @Override

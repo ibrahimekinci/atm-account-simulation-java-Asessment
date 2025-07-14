@@ -13,7 +13,10 @@ package domain;
  */
 public interface IHasDailyLimit {
 
-    double getDailyLimit();
+    double getWithdrawalLimit();
+
+    double getRemainingWithdrawalLimit();
 
     boolean isWithinDailyLimit(double amount);
+
 }

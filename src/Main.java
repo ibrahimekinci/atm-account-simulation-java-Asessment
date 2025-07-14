@@ -1,8 +1,10 @@
 
-import exception.*;
+import exceptions.*;
 import domain.*;
 import java.time.LocalDate;
 import java.time.Period;
+import javax.swing.SwingUtilities;
+import ui.LoginFrame;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -12,108 +14,133 @@ import java.time.Period;
  *
  * @author pc
  */
-/**
- * Main class to simulate ATM operations and test account behaviors.
- */
 public class Main {
 
-    /**
-     * Handles exceptions and distinguishes between domain and system errors.
-     */
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new LoginFrame().setVisible(true));
+    }
+
     private static void handleException(Exception e) {
         if (e instanceof ICustomException customException) {
-            System.out.printf("Domain Error: %s%n", customException.getMessage());
+            System.out.printf("❌ Domain Error: %s%n", customException.getMessage());
         } else {
-            System.out.printf("Unexpected Error: %s%n", e.getMessage());
+            System.out.printf("❌ Unexpected Error: %s%n", e.getMessage());
         }
     }
 
-    public static void main(String[] args) {
+    private static void printAccountDetails(IAccount account) {
+        System.out.printf("-> Account Title: %s | ID: %s | Type: %s | Balance: $%.2f%n",
+                account.getAccountTitle(),
+                account.getAccountId(),
+                account.getAccountTypeDisplayName(),
+                account.getBalance());
+    }
+
+    private static void tests() {
         try {
-            // === ACCOUNT INITIALIZATION ===
-            System.out.println("=== ACCOUNT INITIALIZATION ===");
-            IAccount savings = new SavingsAccount(500.00, 1000.00);
-            IAccount cheque = new ChequeAccount(200.00);
-            IAccount netSaver = new NetSaverAccount(1000.00, LocalDate.now().minusDays(31));
-            IAccount fixed = new FixedAccount(1500.00, LocalDate.now().minusMonths(7), Period.ofMonths(6), false);
+            // === Account Setup ===
+            IAccount savings = new SavingsAccount("SAV001", "MySavings", 2000.00, 500.00, 1000.00);
+            IAccount cheque = new ChequeAccount("CHQ001", "DailyCheque", 200.00);
+            IAccount netSaver = new NetSaverAccount("NET001", "GrowthNetSaver", 1000.00, LocalDate.now().minusDays(31));
+            IAccount fixed = new FixedAccount("FIX001", "LockedFixed", 1500.00, LocalDate.now().minusMonths(7), Period.ofMonths(6), false);
 
-            System.out.printf("Savings Account: $%.2f (Daily Limit: $1000.00)%n", savings.getBalance());
-            System.out.printf("Cheque Account: $%.2f%n", cheque.getBalance());
-            System.out.printf("NetSaver Account: $%.2f (Opened 31 days ago)%n", netSaver.getBalance());
-            System.out.printf("Fixed Account: $%.2f (Opened 7 months ago, Term: 6 months)%n%n", fixed.getBalance());
+            System.out.println("\n=== 🧾 Initial Account Details ===");
+            printAccountDetails(savings);
+            printAccountDetails(cheque);
+            printAccountDetails(netSaver);
+            printAccountDetails(fixed);
+            System.out.println();
 
-            // === DEPOSITS ===
-            System.out.println("=== DEPOSIT TESTS ===");
+            // === Deposit Test ===
+            System.out.println("=== 💰 Deposit Test ===");
             try {
-                System.out.println("Depositing $5000 to Savings...");
                 savings.deposit(5000);
-                System.out.printf("New Savings Balance: $%.2f%n", savings.getBalance());
-
-                System.out.println("Depositing $300 to Cheque...");
+                System.out.println("✅ Deposited $5000 into Savings.");
                 cheque.deposit(300);
-                System.out.printf("New Cheque Balance: $%.2f%n%n", cheque.getBalance());
+                System.out.println("✅ Deposited $300 into Cheque.");
             } catch (Exception e) {
                 handleException(e);
             }
+            printAccountDetails(savings);
+            printAccountDetails(cheque);
+            System.out.println();
 
-            // === VALID WITHDRAWALS ===
-            System.out.println("=== VALID WITHDRAWALS ===");
+            // === Valid Withdrawals ===
+            System.out.println("=== 💳 Valid Withdrawals ===");
             try {
-                System.out.printf("Savings Balance Before Withdrawal: $%.2f%n", savings.getBalance());
                 savings.withdraw(100);
-                System.out.printf("Withdrew $100. New Savings Balance: $%.2f%n", savings.getBalance());
-
-                System.out.printf("Cheque Balance Before Withdrawal: $%.2f%n", cheque.getBalance());
+                System.out.println("✅ Withdrew $100 from Savings.");
                 cheque.withdraw(100);
-                System.out.printf("Withdrew $100. New Cheque Balance: $%.2f%n%n", cheque.getBalance());
+                System.out.println("✅ Withdrew $100 from Cheque.");
             } catch (Exception e) {
                 handleException(e);
             }
+            printAccountDetails(savings);
+            printAccountDetails(cheque);
+            System.out.println();
 
-            // === ADD INTEREST (VALID) ===
-            System.out.println("=== INTEREST APPLICATION (VALID ACCOUNTS) ===");
+            // === Interest Calculation ===
+            System.out.println("=== 📈 Interest Calculation ===");
             ((IInterestBearing) savings).addInterest();
             ((IInterestBearing) netSaver).addInterest();
             ((IInterestBearing) fixed).addInterest();
-            System.out.printf("Savings with interest: $%.2f%n", savings.getBalance());
-            System.out.printf("NetSaver with interest: $%.2f%n", netSaver.getBalance());
-            System.out.printf("Fixed with interest: $%.2f%n%n", fixed.getBalance());
+            printAccountDetails(savings);
+            printAccountDetails(netSaver);
+            printAccountDetails(fixed);
+            System.out.println();
 
-            // === REINIT FOR EARLY TEST ===
-            System.out.println("=== REINITIALIZE FOR EARLY INTEREST TESTS ===");
-            netSaver = new NetSaverAccount(1100.00, LocalDate.now().minusDays(7));
-            fixed = new FixedAccount(300.00, LocalDate.now().minusMonths(4), Period.ofMonths(6), false);
+            // === NetSaver Early Interest Attempt (Invalid) ===
+            System.out.println("=== ⛔ NetSaver Early Interest Attempt ===");
+            netSaver = new NetSaverAccount("NET002", "TooNewNetSaver", 1000.00, LocalDate.now().minusDays(7));
+            try {
+                ((IInterestBearing) netSaver).addInterest();
+            } catch (Exception e) {
+                handleException(e);
+            }
+            printAccountDetails(netSaver);
+            System.out.println();
 
-            System.out.printf("NetSaver Reinit: $%.2f (Opened 7 days ago)%n", netSaver.getBalance());
-            System.out.printf("Fixed Reinit: $%.2f (Opened 4 months ago, 6-month term)%n%n", fixed.getBalance());
-
-            // === INTEREST DENIED DUE TO EARLY PERIOD ===
-            System.out.println("=== EARLY INTEREST TESTS ===");
-            ((IInterestBearing) netSaver).addInterest();
-            ((IInterestBearing) fixed).addInterest();
-            System.out.printf("NetSaver after denied interest (too early): $%.2f%n", netSaver.getBalance());
-            System.out.printf("Fixed after denied interest (term not over): $%.2f%n%n", fixed.getBalance());
-
-            // === INVALID DENOMINATION ===
-            System.out.println("=== INVALID DENOMINATION (30 AUD) ===");
+            // === Invalid Denomination Test ===
+            System.out.println("=== ⚠️ Invalid Denomination (Withdraw 30) ===");
             try {
                 cheque.withdraw(30);
             } catch (Exception e) {
                 handleException(e);
             }
-            System.out.printf("Cheque balance remains: $%.2f%n%n", cheque.getBalance());
+            printAccountDetails(cheque);
+            System.out.println();
 
-            // === INSUFFICIENT FUNDS ===
-            System.out.println("=== INSUFFICIENT FUNDS (5000 AUD) ===");
+            // === Insufficient Funds Test ===
+            System.out.println("=== 🚫 Insufficient Funds (Withdraw 5000) ===");
             try {
                 cheque.withdraw(5000);
             } catch (Exception e) {
                 handleException(e);
             }
-            System.out.printf("Cheque balance remains: $%.2f%n%n", cheque.getBalance());
+            printAccountDetails(cheque);
+            System.out.println();
 
-            // === NULL POINTER EXCEPTION TEST ===
-            System.out.println("=== UNEXPECTED ERROR (NULL ACCOUNT) ===");
+            // === Daily Limit Tests ===
+            System.out.println("=== ⛔ Daily Limit Test on Savings (Withdraw 1200) ===");
+            try {
+                savings.withdraw(1200);
+            } catch (Exception e) {
+                handleException(e);
+            }
+
+            System.out.println("=== ✅ Partial Withdrawals to Exhaust Daily Limit (Savings) ===");
+            try {
+                savings.withdraw(400);
+                savings.withdraw(300);
+                savings.withdraw(300); // might exceed remaining limit
+            } catch (Exception e) {
+                handleException(e);
+            }
+            printAccountDetails(savings);
+            System.out.println();
+
+            // === Unexpected Null Exception Simulation ===
+            System.out.println("=== 💥 Unexpected Error Test ===");
             try {
                 IAccount broken = null;
                 broken.deposit(100);
@@ -121,54 +148,6 @@ public class Main {
                 handleException(e);
             }
             System.out.println();
-
-            // === DAILY LIMIT TESTS: SAVINGS ===
-            System.out.println("=== DAILY LIMIT TEST: SAVINGS ACCOUNT ===");
-            System.out.printf("Current Balance: $%.2f | Daily Limit: $1000.00%n", savings.getBalance());
-
-            System.out.println("Attempting to withdraw $1200 (above daily limit)...");
-            try {
-                savings.withdraw(1200);
-            } catch (Exception e) {
-                handleException(e);
-            }
-
-            System.out.println("Attempting 3 withdrawals: $400 + $300 + $300...");
-            try {
-                savings.withdraw(400);
-                System.out.printf("After $400 -> Balance: $%.2f%n", savings.getBalance());
-                savings.withdraw(300);
-                System.out.printf("After $300 -> Balance: $%.2f%n", savings.getBalance());
-                savings.withdraw(300); // should fail
-            } catch (Exception e) {
-                handleException(e);
-            }
-            System.out.printf("Final Savings Balance: $%.2f%n%n", savings.getBalance());
-
-            // === DAILY LIMIT TESTS: NETSAVER ===
-            System.out.println("=== DAILY LIMIT TEST: NETSAVER ACCOUNT ===");
-            System.out.printf("Current Balance: $%.2f | Daily Limit: $1000.00%n", netSaver.getBalance());
-
-            System.out.println("Attempting to withdraw $1200 (above limit)...");
-            try {
-                netSaver.withdraw(1200);
-            } catch (Exception e) {
-                handleException(e);
-            }
-
-            System.out.println("Attempting 3 withdrawals: $400 + $300 + $300...");
-            try {
-                netSaver.withdraw(400);
-                System.out.printf("After $400 -> Balance: $%.2f%n", netSaver.getBalance());
-                netSaver.withdraw(300);
-                System.out.printf("After $300 -> Balance: $%.2f%n", netSaver.getBalance());
-                System.out.printf("just trying for $350 (should fail) -> Balance: $%.2f%n", netSaver.getBalance());
-                netSaver.withdraw(350); // should fail
-
-            } catch (Exception e) {
-                handleException(e);
-            }
-            System.out.printf("Final NetSaver Balance: $%.2f%n", netSaver.getBalance());
 
         } catch (Exception e) {
             handleException(e);

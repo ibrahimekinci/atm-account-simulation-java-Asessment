@@ -18,4 +18,17 @@ public interface IInterestBearing {
      * amount based on the current balance and a defined interest rate.
      */
     void addInterest();
+
+    double getInterestRate();
+
+    /**
+     * Returns a formatted interest rate string for display. Examples: - 0.03 ->
+     * "3.00% per month" - 0.05 -> "5.00% per term"
+     *
+     * @return
+     */
+    default String getInterestRateDisplayText() {
+        double rate = getInterestRate();
+        return String.format("%.2f%% per term", rate * 100);
+    }
 }

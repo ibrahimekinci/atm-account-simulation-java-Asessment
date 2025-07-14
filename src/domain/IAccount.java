@@ -4,8 +4,8 @@
  */
 package domain;
 
-import exception.InvalidAmountException;
-import exception.CustomException;
+import exceptions.InvalidAmountException;
+import exceptions.CustomException;
 
 /**
  *
@@ -21,4 +21,13 @@ public interface IAccount {
     void withdraw(double amount) throws CustomException;
 
     double getBalance();
+
+    String getAccountId();
+
+    String getAccountTitle();
+
+    AccountType getAccountType();
+
+    String getAccountTypeDisplayName();
+
 }
