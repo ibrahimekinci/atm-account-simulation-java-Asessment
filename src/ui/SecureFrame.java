@@ -41,7 +41,7 @@ public abstract class SecureFrame extends BaseFrame {
     }
 
     private void setupSessionTimer() {
-        sessionCheckTimer = new Timer(1000, e -> {
+        sessionCheckTimer = new Timer(10000, e -> {
             if (sessionManager.isSessionExpired()) {
                 sessionCheckTimer.stop();
                 promptSessionContinuation();
