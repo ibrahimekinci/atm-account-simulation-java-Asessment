@@ -24,7 +24,8 @@ public class MyAccountsFrame extends SecureFrame {
     public MyAccountsFrame(Customer customer) {
         super("My Accounts", customer);
         this.customer = customer;
-
+        
+        resetSession();
         setTitle("My Accounts - " + customer.getFullName());
         setSize(700, 400);
         setLocationRelativeTo(null);

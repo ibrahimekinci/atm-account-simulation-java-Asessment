@@ -5,7 +5,7 @@ import java.time.Duration;
 
 public class MockSessionManager {
 
-    private static final long TIMEOUT_SECONDS = 5;
+    private static final long TIMEOUT_SECONDS = 15;
     private Instant lastActivity = Instant.now();
 
     public void refreshSession() {

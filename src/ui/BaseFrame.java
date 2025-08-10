@@ -30,4 +30,12 @@ public abstract class BaseFrame extends JFrame {
         UIManager.put("Button.font", UIStyle.DEFAULT_FONT);
         UIManager.put("TextField.font", UIStyle.DEFAULT_FONT);
     }
+
+    protected void closeAllOpenForms() {
+        for (Window window : Window.getWindows()) {
+            if (window instanceof JFrame) {
+                window.dispose(); // Close each JFrame
+            }
+        }
+    }
 }

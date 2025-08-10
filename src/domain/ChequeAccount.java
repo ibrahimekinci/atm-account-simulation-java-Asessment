@@ -19,11 +19,4 @@ public class ChequeAccount extends BaseAccount {
     public ChequeAccount(String accountId, String accountTitle, double initialBalance) throws InvalidAmountException {
         super(accountId, accountTitle, AccountType.CHEQUE, initialBalance);
     }
-
-    @Override
-    public void withdraw(double amount) throws InvalidAmountException, InsufficientFundsException {
-        validateWithdrawal(amount);
-        checkBalance(amount);
-        balance -= amount;
-    }
 }

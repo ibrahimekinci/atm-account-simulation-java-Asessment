@@ -117,7 +117,9 @@ public class UIStyle {
         helpLink.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                new HelpFrame().setVisible(true);
+                HelpFrame helpFrame = new HelpFrame();
+                helpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Only close this frame
+                helpFrame.setVisible(true);
 
             }
         });

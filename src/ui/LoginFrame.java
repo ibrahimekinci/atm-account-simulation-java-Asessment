@@ -5,7 +5,6 @@ import exceptions.*;
 import infrastructure.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * Login screen for ATM Simulation.
@@ -79,8 +78,9 @@ public class LoginFrame extends BaseFrame {
     }
 
     private void goToHelpPage() {
-        dispose();
-        new HelpFrame();
+        HelpFrame helpFrame = new HelpFrame();
+        helpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Only close this frame
+        helpFrame.setVisible(true);
     }
 
     private void attemptLogin() {

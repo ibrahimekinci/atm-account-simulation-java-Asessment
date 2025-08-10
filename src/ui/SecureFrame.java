@@ -6,6 +6,8 @@ package ui;
 
 import domain.Customer;
 import infrastructure.MockSessionManager;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
 
 import javax.swing.*;
 
@@ -29,8 +31,32 @@ public abstract class SecureFrame extends BaseFrame {
     }
 
     protected void logout() {
-        dispose();
-        new LoginFrame().setVisible(true);
+        if (sessionCheckTimer != null) {
+            sessionCheckTimer.stop();
+        }
+
+        // Get all open frames
+        closeAllOpenForms();
+        // Open the login frame
+        SwingUtilities.invokeLater(() -> {
+            LoginFrame loginFrame = new LoginFrame();
+            loginFrame.setVisible(true);
+        });
+    }
+
+    @Override
+    public void dispose() {
+        if (sessionCheckTimer != null && sessionCheckTimer.isRunning()) {
+            sessionCheckTimer.stop();
+        }
+        super.dispose();
+    }
+
+    protected void resetSession() {
+        sessionManager.refreshSession();
+        if (sessionCheckTimer != null && !sessionCheckTimer.isRunning()) {
+            sessionCheckTimer.restart();
+        }
     }
 
     private void validateSession() {
@@ -41,14 +67,18 @@ public abstract class SecureFrame extends BaseFrame {
     }
 
     private void setupSessionTimer() {
-        sessionCheckTimer = new Timer(10000, e -> {
-            if (sessionManager.isSessionExpired()) {
-                sessionCheckTimer.stop();
-                promptSessionContinuation();
-            }
-        });
-        sessionCheckTimer.start();
-
+        // Only create a new timer if it doesn't exist or was stopped
+        if (sessionCheckTimer == null || !sessionCheckTimer.isRunning()) {
+            sessionCheckTimer = new Timer(5000, (ActionEvent e) -> {
+                if (sessionManager.isSessionExpired()) {
+                    sessionCheckTimer.stop();
+                    promptSessionContinuation();
+                }
+            });
+            sessionCheckTimer.setInitialDelay(0); // Start immediately
+            sessionCheckTimer.start();
+        }
+        resetSession();
     }
 
     private void promptSessionContinuation() {
@@ -65,6 +95,7 @@ public abstract class SecureFrame extends BaseFrame {
             optionPane.setValue(JOptionPane.NO_OPTION);
             dialog.setVisible(false);
         });
+
         autoClose.setRepeats(false);
         autoClose.start();
         dialog.setVisible(true);
@@ -75,8 +106,8 @@ public abstract class SecureFrame extends BaseFrame {
             JOptionPane.showMessageDialog(this, "You have been logged out due to inactivity.");
             logout();
         } else {
-            sessionManager.refreshSession();
-            sessionCheckTimer.restart();
+            resetSession();
         }
+
     }
 }

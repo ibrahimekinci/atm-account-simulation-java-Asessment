@@ -62,7 +62,9 @@ public abstract class BaseAccount implements IAccount {
 
     @Override
     public void withdraw(double amount) throws CustomException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        validateWithdrawal(amount);
+        checkBalance(amount);
+        balance -= amount;
     }
 
     @Override

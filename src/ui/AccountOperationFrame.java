@@ -5,11 +5,9 @@
 package ui;
 
 import domain.*;
-import exceptions.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  *
@@ -33,6 +31,7 @@ public class AccountOperationFrame extends SecureFrame {
         this.customer = customer;
         this.account = account;
 
+        resetSession();
         setSize(500, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -116,6 +115,7 @@ public class AccountOperationFrame extends SecureFrame {
     }
 
     private void handleKeypadInput(String key) {
+        resetSession();
         if (key.equals("CLR")) {
             inputField.setText("");
         } else {
@@ -124,6 +124,8 @@ public class AccountOperationFrame extends SecureFrame {
     }
 
     private void performTransaction(boolean isDeposit) {
+        resetSession();
+
         String input = inputField.getText().trim();
 
         if (input.isEmpty()) {
@@ -143,7 +145,7 @@ public class AccountOperationFrame extends SecureFrame {
             }
 
             balanceLabel.setText("Current Balance: $" + String.format("%.2f", account.getBalance()));
-          
+
             if (account instanceof IHasDailyLimit limitInfo) {
                 remainingWithdrawalLimitLabel.setText("Remaining Daily Limit: $" + limitInfo.getRemainingWithdrawalLimit());
             }
